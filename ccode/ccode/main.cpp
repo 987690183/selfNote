@@ -521,6 +521,7 @@ int main1()
     ShowN(a,b);
     cin.get();
     return 0;
+    
 }
 
 
