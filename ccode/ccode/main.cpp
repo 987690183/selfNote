@@ -471,9 +471,58 @@ private:
     friend void stu::hxltom(tea &t);
 };
 
-int main(){
+int main9(){
     printf("test\n");
     return 0;
 }
+
+
+
+
+
+//友元函数，一个函数是多个类的友元的情况
+class Country;
+class Internet
+{
+public:
+    Internet(char *name,char *address)        // 改为：internet(const char *name , const char *address)
+    {
+        strcpy(Internet::name,name);
+        strcpy(Internet::address,address);
+    }
+    friend void ShowN(Internet &obj,Country &cn);//注意这里
+public:
+    char name[20];
+    char address[20];
+};
+class Country
+{
+public:
+    Country()
+    {
+        strcpy(cname,"中国");
+    }
+    friend void ShowN(Internet &obj,Country &cn);//注意这里
+protected:
+    char cname[30];
+};
+
+void ShowN(Internet &obj,Country &cn)
+{
+    cout<<cn.cname<<"|"<<obj.name<<endl;
+}
+
+int main1()
+{
+    char str1[] = "大气象";
+    char str2[] = "http://greatverve.cnblogs.com";
+    Internet a(str1, str2);
+    Country b;
+    ShowN(a,b);
+    cin.get();
+    return 0;
+}
+
+
 
 
