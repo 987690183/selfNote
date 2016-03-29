@@ -1,0 +1,24 @@
+pairs可以遍历表中所有的key，并且除了迭代器本身以及遍历表本身还可以返回nil;
+
+但是ipairs则不能返回nil,只能返回数字0，如果遇到nil则退出。它只能遍历到表中出现的第一个不是整数的key
+
+local t = {
+	[1] = "2",
+	[2] = 4,
+	["xjkl"] = 33,
+	[3] = "dfdf",
+	[6] = 3111
+
+}
+
+for k,v in ipairs(t) do
+	print(v)
+end
+print(t[4])
+
+
+2
+4
+dfdf
+nil
+

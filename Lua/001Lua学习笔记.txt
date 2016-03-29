@@ -1,0 +1,318 @@
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+--倒置的链表
+list  = nil
+for i = 1, 10 do
+	list = { next = list, value = i}
+end
+
+local l = list
+while l do
+	print(l.value)
+	l = l.next
+end
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+--队列
+List = {}
+function List.new()
+	return {fisrt = 0, last = 0}
+end
+function List.push(Q,value)
+	local last = Q.last + 1
+	Q[last] = value
+	Q.last = last
+end
+
+function List.pop(Q)
+	local first = Q.first + 1
+
+	if first > Q.last then return error("error") end
+	Q.first = first
+	return Q[first-1]
+end
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+串行化：
+function serialize(o)
+    if type(o) == "number" then
+        io.write(o)
+    elseif type(o) == "string" then
+        --string.format函数的"%q"参数可以转义字符串中的元字符。
+        io.write(string.format("%q",o))
+    elseif type(o) == "table" then
+        io.write("{\n")
+        --迭代table中的各个元素，同时递归的写出各个字段的value。
+        --由此可以看出，这个简单例子可以支持嵌套的table。
+        for k,v in pairs(o) do
+            --这样做是为了防止k中包含非法的Lua标识符。
+            io.write(" ["); serialize(k); io.write("] = ")
+            serialize(v)
+            io.write(",\n")
+        end
+        io.write("}\n")
+    else
+        error("cannot serialize a " .. type(o))
+    end
+end
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+元表的应用：
+Set = {}
+local mt = {}
+
+function Set.new(L)
+	local set = {}
+	setmetatable(set,mt)
+	for _,v in pairs(L) do
+		set[v] = true
+	end
+	return set
+end
+
+function Set.union(a,b)
+	local cur = {}
+	for i in pairs(a) do
+		cur[i] = true
+	end
+
+	for i in pairs(b) do
+		cur[i] = true
+	end
+	return cur
+end
+
+function Set.intersection(a,b)
+	local cur = {}
+	for v in pairs(a) do
+		cur[v] = b[v]
+	end
+	return cur
+end
+
+function Set.tostring(set)
+	local l = {}
+	for e in pairs(set) do
+		l[#l+1] = e
+	end
+	return "{"..table.concat(l,",").."}"
+end
+
+function Set.print(s)
+	print(Set.tostring(s))
+end
+
+mt.__add = Set.union
+
+s1 = Set.new({10,20,30,50})
+s2 = Set.new({15,25,35,60})
+
+s3 = s1+s2
+Set.print(s3)
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+__newindex元方法与__index类似，__newindex用于更新table中的数据，
+而__index用于查询table中的数据。当对一个table中不存在的索引赋值时，在Lua中是按照以下步骤进行的：
+1.Lua解释器先判断这个table是否有元表；
+2.如果有了元表，就查找元表中是否有__newindex元方法；如果没有元表，就直接添加这个索引，然后对应的赋值；
+3.如果有这个__newindex元方法，Lua解释器就执行它，而不是执行赋值；
+4.如果这个__newindex对应的不是一个函数，而是一个table时，Lua解释器就在这个table中执行赋值，而不是对原来的table。
+
+__index 例子：
+Windows = {}
+
+Windows.default = {
+	x = 0,y = 0,with = 100,heigh = 200,
+	color = {
+		r = 255, g = 255, b = 255
+	}
+}
+
+function Windows.tostring(s)
+	if type(s) == "number" then
+		io.write(s)
+	elseif type(s) == "string" then
+		io.write(string.format("%q",s))
+	elseif type(s) == "table" then
+		io.write("{")
+		for key,value in pairs(s) do
+			io.write("["); io.write(Windows.tostring(key)); io.write("] = ")
+			io.write(Windows.tostring(value))
+			io.write(",\n")
+		end
+		io.write("}")
+	else
+		error("cannot tostring!!!");
+	end
+end
+
+function Windows.print(s)
+	return print(Windows.tostring(s))
+end
+Windows.mt = {} -- 创建元表
+
+function Windows.new(o)
+	setmetatable(o,Windows.mt)
+	return o
+end
+
+Windows.mt.__index = function (table ,key)
+	return Windows.default[key]
+end
+
+local win = Windows.new{x = 10, y = 20 }
+
+
+Windows.print(win.x)
+Windows.print(win.with)
+Windows.print(win.color)
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+实现类和对象的例子：
+p中有没有talk这个键? 有 --> 返回talk对应的值
+        |
+       没有
+        |
+p中是否设置过metatable? 否 -->  返回nil
+        |
+        有
+        |
+在p的metatable中有没有__index这个键? 没有 -->  返回nil
+        |
+        有
+        |      
+在p的metatable中的__index这个键对应的表中有没有talk这个键? 没有 --> 返回nil
+        |
+        有，返回getmetatable(p).__index.talk
+		
+		
+Person = {name = "我是一个懒人"} --类
+
+Person.__index = Person --重定义元表的索引  设置Person类的__index为自己
+function Person:talk(words)--类的一个方法
+	print(self.name.." 说:"..words)
+end
+
+function Person:create(name)--构造函数一样
+	local p = {}
+	setmetatable(p,Person) --设置了p的元方法
+	p.name = name
+	return  p
+end
+
+local pa = Person:create("路人甲A") --创建一个对象
+local pb = Person:create("路人甲B")
+
+pa:talk("hello")
+pb:talk("sb")
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+类的继承的一个例子：必须理解setmetatable,__index的过程。
+
+-- http://blog.csdn.net/losophy/article/details/20311387
+A  = {} --基类A
+
+function A:new(o) --构造方法
+	o = o or {} --如果为nil 则赋值为{}
+	setmetatable(o,self) --设置元方法，确定在谁那寻找子类，没有的方法
+	self.__index = self --这个很重要。所以理解。
+	return o
+end
+
+function A:funName()
+	print("A")
+end
+
+B = A:new()
+B:funName()
+
+C = B:new()
+
+function B:funName()
+	print("B")
+end
+
+C:funName()
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+使用__newindex设置只读模式，牛气
+local function readOnly(t)
+    local newT = {}
+    local mt = {
+        __index = t,
+        __newindex = function()
+            error("别修改我！我是只读的！")
+        end
+    }
+    setmetatable(newT, mt)
+    return newT
+end
+local days = readOnly({"星期一", "星期二", "星期日"})
+
+print(days[2])
+days[1]="hehe" --但调用次赋值的时候，就会找到__newindex，从而被禁止 
+
+______________________________________________________________
+a.首先，readOnly会创建一个新的table，然后把我们传进去的table作为__index元方法。
+b.元表里还增加了__newindex，用来阻止不存在字段的赋值操作。
+c.readOnly返回的table已经不是我们原来的table了，它是一个空的table，但是它被设置了一个新的元表。
+d.开始对days执行赋值操作：days[2] = “星期三哪去了啊？” 。
+e.days是一个空的table，所以它不存在这个字段，也因此，会调用__newindex元方法，赋值失败。
+f.如果只是调用days，不进行赋值，如：print(days[2]); 则能正常输出字段值，因为days的元表里有__index元方法。虽然days中不存在2这个字段，但是可以通过__index找到这个字段。
+总而言之，最终，days成为了一个只可以读取，不能进行赋值操作的table。
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+解释__newindex的作用
+a.如果__newindex是一个函数，则在给table不存在的字段赋值时，会调用这个函数。
+b.如果__newindex是一个table，则在给table不存在的字段赋值时，会直接给__newindex的table赋值。
+
+local smartMan = {
+	name = "hxl",
+	money = 9000,
+	hello = function()
+		print("hxl ni hao")
+	end
+}
+
+local t = {}
+
+local mt = {
+	__index = smartMan,
+	__newindex = function(table,key,value)
+		print("key".."不要试图修改我,已经被禁止了!")
+	end
+}
+
+setmetatable(t,mt)
+
+print(t.name)
+print(t.money)
+t.hello()
+t.hello = "heh"
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+__index 和 __newindex的一个很牛气的例子
+ local smartMan = {
+        name = "none",
+    }
+   
+    local other = {
+        name = "大家好，我是很无辜的table"
+    }
+   
+    local t1 = {};
+   
+    local mt = {
+        __index = smartMan,
+        __newindex = other
+    }
+   
+    setmetatable(t1, mt);
+     
+    print("other的名字，赋值前：" .. other.name);
+    t1.name = "小偷";
+    print("other的名字，赋值后：" .. other.name);
+    print("t1的名字：" .. t1.name);
+结果：
+[LUA-print] other的名字，赋值前：大家好，我是很无辜的table
+[LUA-print] other的名字，赋值后：小偷
+[LUA-print] t1的名字：none
+说明：修该的时候只会修改__newindex里面的指定的地方值，
+	  查询的时候只会读出 __index里面的值.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

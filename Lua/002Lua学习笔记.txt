@@ -1,0 +1,110 @@
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Lua实现多重继承：
+
+
+ function search(classes, key)--查询函数
+    for i = 1, #classes do
+        local value = classes[i][key];
+        if value ~= nil then
+            return value;
+        end
+    end
+end
+
+ function createClass(...) --可变参数
+    local parents = {...}; --保存它的可变参数
+    local child = {};
+
+    -- 设置类的元表,如果元表已经设置，就去元表里看看有没有设置__index，找有没有对应的key值.
+    setmetatable(child, {
+        __index = function(table, key)
+            return search(parents, key);
+        end
+    })
+
+    -- 给类新增一个new函数，用于创建对象
+    function child:new()
+        o = {};
+        setmetatable(o, child);--设置元表，并且在自己的地方寻找有木有相对于的key值
+        child.__index = child;--设置元表，并且在自己的地方寻找有木有相对于的key值
+        return o;
+    end
+
+    -- 返回这个继承了多个类的子类
+    return child;
+end
+
+
+ --一个精灵类
+    TSprite = {}
+    function TSprite:hello()
+        print("谁跟你hello！");
+    end
+
+    function TSprite:new()
+        o = {}
+        setmetatable(o, self);
+        self.__index = self;
+        return o;
+    end
+
+    -- 一个子弹类
+    TBullet = {}
+    function TBullet:fire()
+        print("别动，再动我就瞄不准了！");
+    end
+    function TBullet:new()
+        o = {}
+        setmetatable(o, self);
+        self.__index = self;
+        return o;
+    end
+
+    -- 继承了两个类的子类
+    local BulletSprite = createClass(TSprite, TBullet);--传入这两个table，返回对应的child
+
+    -- 子类的对象
+    local bSprite = BulletSprite:new();
+    bSprite:hello();
+	--[[子类对象调用hello方法，会去bSprite中寻找，
+	发现没有,那么此时没有就去看看 bSprite有没有设置元表有的，去元表中看有没有设置__index
+	发现也是有的，就调用它对应的方法，便进入了serch了。便可以找到了
+	--]]
+    bSprite:fire();
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+弱引用：
+1）key值弱引用，也就是刚刚说到的情况，只要其他地方没有对key值引用，
+那么，table自身的这个字段也会被删除。设置方法：setmetatable(t, {__mode = “k”});
+2）value值弱引用，情况类似，只要其他地方没有对value值引用，
+那么，table的这个value所在的字段也会被删除。设置方法：setmetatable(t, {__mode = “v”});
+3）key和value弱引用，规则一样，但是key和value都同时生效，
+任意一个起作用时都会导致table的字段被删除。设置方法：setmetatable(t, {__mode = “kv”});
+ 
+当然，这里所说的被删除，是指在Lua执行垃圾回收的时候，并不一定是立刻生效的。
+我们刚刚只是为了测试，而强制执行了垃圾回收。
+
+t = {};
+
+    -- 给t设置一个元表，增加__mode元方法，赋值为“k”
+    setmetatable(t, {__mode = "k"});
+
+    -- 使用一个table作为t的key值
+    key1 = {name = "key1"};
+    t[key1] = 1;
+
+    -- 又使用一个table作为t的key值
+    key2 = {name = "key2"};
+    t[key2] = 1;
+
+	t = {}
+	key1,key2 = t,t
+
+    -- 强制进行一次垃圾收集
+    collectgarbage();
+
+    for key, value in pairs(t) do
+        print(key.name .. ":" .. value);
+    end
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+

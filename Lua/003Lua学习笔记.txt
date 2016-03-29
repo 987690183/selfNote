@@ -1,0 +1,48 @@
+Lua table函数库
+
+table.concat(table, sep,  start, end)
+concat是concatenate(连锁, 连接)的缩写. table.concat()函数列出参数中指定table的数组部分从start位置到end位置的所有元素, 元素间以指定的分隔符(sep)隔开。除了table外, 
+其他的参数都不是必须的, 分隔符的默认值是空字符, 
+start的默认值是1, end的默认值是数组部分的总长.
+sep, start, end这三个参数是顺序读入的, 所以虽然它们都不是必须参数, 
+但如果要指定靠后的参数, 必须同时指定前面的参数
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+table.insert(table, pos, value)
+table.insert()函数在table的数组部分指定位置(pos)插入值为value的一个元素. 
+pos参数可选, 默认为数组部分末尾.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+table.maxn(table)
+
+table.maxn()函数返回指定table中所有正数key值中最大的key值. 
+如果不存在key值为正数的元素, 则返回0. 此函数不限于table的数组部分.
+
+> tbl = {[1] = "a", [2] = "b", [3] = "c", [26] = "z"}
+> print(#tbl)
+3               -- 因为26和之前的数字不连续, 所以不算在数组部分内
+> print(table.maxn(tbl))
+26
+> tbl[91.32] = true
+> print(table.maxn(tbl))
+91.32
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+table.remove(table, pos)
+table.remove()函数删除并返回table数组部分位于pos位置的元素. 
+其后的元素会被前移. pos参数可选, 默认为table长度, 即从最后一个元素删起.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+table.sort(table, comp)
+table.sort()函数对给定的table进行升序排序.
+> tbl = {"alpha", "beta", "gamma", "delta"}
+> table.sort(tbl)
+> print(table.concat(tbl, ", "))
+alpha, beta, delta, gamma
+comp是一个可选的参数, 此参数是一个外部函数, 可以用来自定义sort函数的排序标准.
+此函数应满足以下条件: 接受两个参数(依次为a, b), 
+并返回一个布尔型的值, 当a应该排在b前面时, 返回true, 反之返回false.
+
+例如, 当我们需要降序排序时, 可以这样写:
+
+> sortFunc = function(a, b) return b < a end
+> table.sort(tbl, sortFunc)
+> print(table.concat(tbl, ", "))
+gamma, delta, beta, alpha
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
