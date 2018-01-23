@@ -66,12 +66,81 @@ git
 
 21 删除分支 git branch -d dev
 
+22 git log --graph --pretty=oneline --abbrev-commit
 
+23 分支管理策略
+	通常，合并分支时，如果可能，Git会用Fast forward模式，但这种模式下，删除分支后，会丢掉分支信息。
+	如果要强制禁用Fast forward模式，Git就会在merge时生成一个新的commit，这样，从分支历史上就可以看出分支信息。
+	git merge --no-ff -m "merge with no-ff" dev
+	因为本次合并要创建一个新的commit，所以加上-m参数，把commit描述写进去
+	
+24 bug 分支
+	保存现场
+	git stash 		可以把当前工作现场“储藏”起来，等以后恢复现场后继续工作
+	git stash list  刚才的工作现场存到哪去了？用git stash list命令看看
+	实例==>>
+	$ git stash list
+	stash@{0}: WIP on dev: 6224937 add merge
+	
+	(1)工作现场还在，Git把stash内容存在某个地方了，但是需要恢复一下，有两个办法：
+	一是用git stash apply恢复，但是恢复后，stash内容并不删除，你需要用git stash drop来删除；
+	另一种方式是用git stash pop，恢复的同时把stash内容也删了
+	
+	(2)你可以多次stash，恢复的时候，先用git stash list查看，然后恢复指定的stash，用命令：
+	$ git stash apply stash@{0}
+	
+	当手头工作没有完成时，先把工作现场git stash一下，然后去修复bug，修复后，再git stash pop，回到工作现场。
 	
 	
+25 
+	因此，多人协作的工作模式通常是这样：
+	首先，可以试图用git push origin branch-name推送自己的修改；
+	如果推送失败，则因为远程分支比你的本地更新，需要先用git pull试图合并；
+	如果合并有冲突，则解决冲突，并在本地提交；
+	没有冲突或者解决掉冲突后，再用git push origin branch-name推送就能成功！
+	如果git pull提示“no tracking information”，则说明本地分支和远程分支的链接关系没有创建，
+	用命令git branch --set-upstream branch-name origin/branch-name。
+	这就是多人协作的工作模式，一旦熟悉了，就非常简单。
 	
+	查看远程库信息，使用git remote -v；
 	
+
+26 标签
+   查看标签
+   git tag
+   
+   打标签
+   git tag v0.9 6224937 其中 6224937 是对应的commit id
+   
+   git show <tagname>查看标签信息
+   $ git show v0.9
+   
+   还可以创建带有说明的标签，用-a指定标签名，-m指定说明文字：
+   $ git tag -a v0.1 -m "version 0.1 released" 3628164
+   
+   总结：
+    命令git tag <name>用于新建一个标签，默认为HEAD，也可以指定一个commit id；
+	git tag -a <tagname> -m "blablabla..."可以指定标签信息；
+	git tag -s <tagname> -m "blablabla..."可以用PGP签名标签；
+	命令git tag可以查看所有标签。
 	
+27 删除标签
+   git tab -d v0.1
+   
+28  git push origin v1.0 推送某个标签到远程
+	git push origin --tags 一次性推送全部尚未推送到远程的本地标签 
 	
-	
-	
+29 删掉远程的一个tag
+   先删本地，后推送
+    1命令git tag -d <tagname>可以删除一个本地标签；
+	2命令git push origin :refs/tags/<tagname>可以删除一个远程标签。
+
+
+
+
+
+
+
+
+
+
