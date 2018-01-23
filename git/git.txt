@@ -1,0 +1,77 @@
+git 
+
+1. git init
+2. pwd 
+3. mkdir d:\gitCode
+4. ls -ah
+
+5. git add x.py
+6. git commit -m "commit a file of x.py"
+可以多次add，一次commit
+7. git status
+8. git diff x.py
+9. git reset x.py
+   git reset --hard 3628164
+10. git log --pretty=oneline
+
+11.
+   git diff 是工作区和暂存区的比较
+   git diff --cached 是暂存区和分支（master）的比较
+   git diff HEAD -- x.py 查看工作区和版本库的区别。就是工作区和分支的区别了。
+
+12. git checkout -- x.py 
+	把x.py文件在工作区的修改全部撤销，这里有两种情况：
+	一种是x.py自修改后还没有被放到暂存区，现在，撤销修改就回到和版本库一模一样的状态；
+	一种是x.py已经添加到暂存区后，又作了修改，现在，撤销修改就回到添加到暂存区后的状态
+	@@@@@@@就是把暂存区的拷贝到工作区
+	
+	类比；
+	git reset HEAD x.py
+	可以把暂存区的修改撤销掉（unstage），重新放回工作区
+	git reset 命令既可以回退版本，也可以把暂存区的修改回退到工作区。
+	当我们用HEAD时，表示最新的版本。
+	
+13.
+	经过实验，发现可以使用三种方法撤销修改（在已经add到暂存空间的情况下）
+	1.$ git reset HEAD$ 然后 git checkout -- readme.txt
+	2.$ git reset --hard HEAD
+	3.$ git checkout HEAD -- readme.txt
+	
+14 rm x.py
+
+
+15 GitHub上创建新的仓库，然后连接他，创建README.md， 上传东西
+	echo "helo" << README.md
+	git init
+	git add README.md
+	git commit -m "first commit"
+	git remote add origin git@guihub.com:987690183/unityCraft.git
+	git push -u origin master
+	
+16 克隆仓库
+   git clone git@guihub.com:987690183/unityCraft
+   
+   
+17 HEAD严格来说不是指向提交，而是指向master，master才是指向提交的，所以，
+   HEAD指向的就是当前分支。
+
+18 git branch 查看当前分支情况
+	当前所处的分支前面会带有 * 号
+
+19 git checkout -b dev 创建dev分支，然后切换到dev分支
+	等同于：
+		git branch dev
+		git checkout dev
+20 git merge dev 将分支dev合并到master
+
+21 删除分支 git branch -d dev
+
+
+	
+	
+	
+	
+	
+	
+	
+	
