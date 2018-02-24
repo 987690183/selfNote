@@ -1,0 +1,14 @@
+D:\blr\client\tool\ScenarioEditor\ScenarioEditor\ScenarioEditor\bin\Debug\ScenarioEditor.exe.config
+D:\blr\client\tool\ScenarioEditor\ScenarioEditor\ScenarioEditor\bin\Debug\ScenarioEditor.exe
+D:\blr\client\tool\ScenarioEditor\ScenarioEditor\ScenarioEditor\bin\Debug\ScenarioEditor.pdb
+D:\blr\client\tool\ScenarioEditor\ScenarioEditor\ScenarioEditor\bin\Debug\ICSharpCode.SharpZipLib.dll
+D:\blr\client\tool\ScenarioEditor\ScenarioEditor\ScenarioEditor\bin\Debug\NPOI.dll
+D:\blr\client\tool\ScenarioEditor\ScenarioEditor\ScenarioEditor\bin\Debug\NPOI.OOXML.dll
+D:\blr\client\tool\ScenarioEditor\ScenarioEditor\ScenarioEditor\bin\Debug\NPOI.OpenXml4Net.dll
+D:\blr\client\tool\ScenarioEditor\ScenarioEditor\ScenarioEditor\bin\Debug\NPOI.OpenXmlFormats.dll
+D:\blr\client\tool\ScenarioEditor\ScenarioEditor\ScenarioEditor\obj\Debug\ScenarioEditor.csprojResolveAssemblyReference.cache
+D:\blr\client\tool\ScenarioEditor\ScenarioEditor\ScenarioEditor\obj\Debug\ScenarioEditor.FrmMain.resources
+D:\blr\client\tool\ScenarioEditor\ScenarioEditor\ScenarioEditor\obj\Debug\ScenarioEditor.Properties.Resources.resources
+D:\blr\client\tool\ScenarioEditor\ScenarioEditor\ScenarioEditor\obj\Debug\ScenarioEditor.csproj.GenerateResource.Cache
+D:\blr\client\tool\ScenarioEditor\ScenarioEditor\ScenarioEditor\obj\Debug\ScenarioEditor.exe
+D:\blr\client\tool\ScenarioEditor\ScenarioEditor\ScenarioEditor\obj\Debug\ScenarioEditor.pdb
