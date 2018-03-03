@@ -1,0 +1,56 @@
+xml: 
+
+==>基础
+元素，<book>djflj</book>
+特征，name = "dlfj";  <book name="dljl">ljfd</book>
+声明，<?xml version = "1.0">
+名称空间 <book xmlns:work="http://www.baidu.com></book>
+
+==>基础方法
+xmlNode 文档树的一个节点，如果这个结点是xml文档的根，就可以从他导航到文档的任意位置
+xmlDocument,
+xmlElement， 元素
+	firstChild,
+	lastChild,
+	parentNode,
+	nextSibling, 返回当前节点同级的一个节点。
+	hasChildNodes, 检查当前元素是否有子元素
+
+xmlAttribute，特征
+xmlText，表示开始标记和结束标记之间的文本 : abc  ; <book>abc</book>
+	innerText, 获取当前节点中所有子节点的文本，返回了一个字符串。返回类似abc123efg
+	innerXml,也是偶有子节点的文本的字符串，但是格式不一样。:<book>abc</book><name>123</name><d>efg</d>
+	value,
+
+xmlComment, 表示一种特殊的节点，不是文档一部分，但为阅读器提供文档个部分的信息
+xmlNodeList, 一个节点集合
+
+
+==>插入新节点
+createNode,
+createElement,
+createAttribute,
+createTextNode,
+createComment,
+
+appendChild,
+insertAfter,
+interBefor,
+
+==>删除节点
+removeAll,
+removeChild,删除节点上的一个子节点，返回这个删除的节点。
+
+==>选择节点
+使用xpath查询语言来实现的2种方式：
+selectSingleNode,返回第一个
+selectNodes,以xmlNodesList形式返回节点集合
+
+
+1.TextAsset
+	https://docs.unity3d.com/Manual/class-TextAsset.html
+ 	二进制用.bytes, 文本用Text
+		
+2.XmlSerializer
+	https://msdn.microsoft.com/zh-cn/library/system.xml.serialization.xmlserializer(v=vs.110).aspx
+
