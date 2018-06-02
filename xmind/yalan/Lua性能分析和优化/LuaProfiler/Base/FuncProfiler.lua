@@ -12,7 +12,7 @@ function Profiler:FuncTitle(funcinfo)
     local name = funcinfo.name or 'anonymous'
     local line = string.format("%d", funcinfo.linedefined or 0)
     local source = funcinfo.short_src or 'null_source'
-    return string.format("%-30s: %s: %s", name, source, line)
+    return string.format("%s: %-10s: %-10s", name, source, line)
 end
 
 function Profiler:GetReport(funcinfo)
@@ -76,3 +76,24 @@ function Profiler:Stop()
 end
 
 return Profiler
+
+--[[
+
+    debug.sethook(hookFunc, mask, 0)
+    "c": the hook is called every time Lua calls a function;
+    "r": the hook is called every time Lua returns from a function;
+    "l": the hook is called every time Lua enters a new line of code.
+
+    debug.getinfo ([thread,] function [, what])
+    function
+    0 is the current function (getinfo itself)
+    level 1 is the function that called getinfo
+    if function is a number larger than the number of active functions, then getinfo returns nil
+    what
+    'n': fills in the field name and namewhat;
+    'S': fills in the fields source, short_src, linedefined, lastlinedefined, and what;
+    'l': fills in the field currentline;
+    'u': fills in the field nups;
+    'f': pushes onto the stack the function that is running at the given level;
+    'L': pushes onto the stack a table whose indices are the numbers of the lines that are valid on the function. (A valid line is a line with some associated code, that is, a line where you can put a break point. Non-valid lines include empty lines and comments.)
+]]
